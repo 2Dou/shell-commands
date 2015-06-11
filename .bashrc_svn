@@ -1,0 +1,67 @@
+# Some commands to use svn
+# Author: 2dou@github
+# Created:2015-06-11
+
+#list unversioned files
+function svn-lu() {
+    if [ $1 = "--help" ]; then
+        svn help status
+        return
+    fi
+    svn status $@ | grep '^\?'
+}
+
+#add all unversioned files to svn control
+function svn-au() {
+    if [ $1 = "--help" ]; then
+        svn help add
+        return
+    fi
+    svn status $@ | grep '^\?' | awk '{print $2}' | xargs svn add
+}
+
+#list missing files
+function svn-lm() {
+    if [ $1 = "--help" ]; then
+        svn help status
+        return
+    fi
+    svn status $@ | grep '^!'
+}
+
+#remove missing files from svn control
+function svn-rm() {
+    if [ $1 = "--help" ]; then
+        svn help remove
+        return
+    fi
+    svn status $@ | grep '^!' | awk '{print $2}' | xargs svn remove
+}
+
+#list log between reversion 1 to reversion 2
+function svn-log() {
+    if [ $1 = "--help" ] || [ -z "$1" ]; then
+        echo "usage: 1. `basename "$0"` [PATH] ARG1:ARG2"
+        echo "       2. `basename "$0"` [URL]  ARG1:ARG2"
+        echo ""
+        echo "ARG                        A revision argument can be one of:"
+        echo "                               NUMBER       revision number"
+        echo "                              '{' DATE '}' revision at start of the date"
+        echo "                              'HEAD'       latest in repository"
+        echo "                              'BASE'       base rev of item's working copy"
+        echo "                              'COMMITTED'  last commit at or before BASE"
+        echo "                              'PREV'       revision just before COMMITTED"
+        echo ""
+        echo "For example:"
+        echo "    `basename "$0"` http://URL/trunk/ 1:100"
+        return
+    fi
+
+    if [ -z "$2" ]; then
+        svn log -r $1 | grep -v '^r\d\+' | grep -v '^----' | grep -v '^$' | awk '!x[$0]++' | grep -n ''
+    else
+        svn log $1 -r $2 | grep -v '^r\d\+' | grep -v '^----' | grep -v '^$' | awk '!x[$0]++' | grep -n ''
+    fi
+}
+
+
