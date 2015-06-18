@@ -58,9 +58,9 @@ function svn-log() {
     fi
 
     if [ -z "$2" ]; then
-        svn log -r $1 | grep -v '^r\d\+' | grep -v '^----' | grep -v '^$' | awk '!x[$0]++' | grep -n ''
+        svn log -r $1 | grep -v '^r\d\+' | grep -v '^[-]*$' | awk '!x[$0]++' | grep -n ''
     else
-        svn log $1 -r $2 | grep -v '^r\d\+' | grep -v '^----' | grep -v '^$' | awk '!x[$0]++' | grep -n ''
+        svn log $1 -r $2 | grep -v '^r\d\+' | grep -v '^[-]*$' | awk '!x[$0]++' | grep -n ''
     fi
 }
 
